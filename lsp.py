@@ -5,7 +5,7 @@ import os
 import time
 class Pc():
     def __init__(self):
-        self.url='https://www.jder.net/meizi/page/1'
+        self.url=''
         self.headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'}
 
     def url_text(self,url,headers):
@@ -47,34 +47,46 @@ class Pc():
         下载图片到本地
         '''
         down=rs.get(url).content
-        if not os.path.exists('D:/妹子/'+filename):
-            os.mkdir('D:/妹子/'+filename)
-        path='D:/妹子/'+filename+'/'+str(c)+'.jpg'
+        if not os.path.exists(r'D:/'+cut+'/'+filename):
+            os.mkdir(r'D:/'+cut+'/'+filename)
+        path=r'D:/'+cut+'/'+filename+'/'+str(c)+'.jpg'
         with open(path,'wb') as f:
             f.write(down)
             time.sleep(0.1)
             print('正在下载:%s,当前是第%s张'%(filename,c))
 
-
-if not os.path.exists('D:/'+'妹子'):
-    os.mkdir('D:/'+'妹子')
-
 Run=Pc()
 
-page=int(input('请输入要下载到的页数:'))
+type=int(input('请输入你要下载的类型\nvlp图请输入: 1\ncosplay图请输入: 2\n妹子图请输入: 3\n二次元图请输入: 4'))
+
+cut=''
+if type==1:
+    cut='fuli'
+elif type==2:
+    cut='cosplay'
+elif type==3:
+    cut='meizi'
+else:
+    cut='mantu'
+
+page=int(input('请输入你要下载到的页数:'))
+if not os.path.exists('D:/'+cut):
+    os.mkdir('D:/'+cut)
+
 for i in range(1,page+1):
-    Run.url='https://www.jder.net/meizi/page/{}'.format(str(i))
+    Run.url='https://www.jder.net/{}/page/{}'.format(cut,str(i))
     html=Run.url_text(Run.url,Run.headers)
     home_page_url=Run.mt_info(html)
     mt_name=Run.get_mt_name()
     count = 0
+
     for img in home_page_url:
         count += 1
         c=1
         img_url=Run.get_img_url(img)
         for url in img_url:
-            Run.img_get(url,mt_name[count-1],c)
-            c+=1
+            Run.img_get(url,mt_name[count-1].replace(':','：').replace('/',''),c)  #mt_name[count-1] 是文件夹名，有些带有特殊字符，创建文件夹时会报错，所以替换掉
+            c += 1
 
 
 
